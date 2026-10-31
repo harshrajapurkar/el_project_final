@@ -1,0 +1,6 @@
+{
+  "name": "Sem-EL Conversation Processor & Verifier",
+  "description": "Local conversation processing, compression, factual verification, external evidence screening, and academic report generation system.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

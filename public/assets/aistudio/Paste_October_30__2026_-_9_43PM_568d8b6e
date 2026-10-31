@@ -1,0 +1,779 @@
+# PROJECT MASTER PROMPT
+## Local Conversation Processing, Compression, Verification and Knowledge Generation System
+### Integrated Sem-EL Project — Tasks 1, 2, 3 and 4
+
+Act as a senior full-stack developer, Python engineer, software architect and technical project mentor.
+
+I am developing an integrated academic software project for my Semester Experiential Learning (Sem-EL) evaluation. I need a complete, functional, properly integrated software system that processes ChatGPT conversations, extracts useful knowledge, checks information against its original context and external sources, and generates structured documents.
+
+The project must be technically accurate, demonstrable, maintainable and suitable for an academic project evaluation.
+
+Do not build four disconnected applications. All four tasks must work together as one integrated pipeline.
+
+---
+
+# 1. PROJECT OBJECTIVE
+
+Develop a Local Conversation Processing and Compression System that transforms lengthy AI conversations into compact, organized, traceable and reusable knowledge.
+
+The system should:
+
+1. Import conversations from ChatGPT.
+2. Parse and clean conversation data.
+3. Remove redundant information while preserving important context.
+4. Identify topics and organize related statements.
+5. Detect important facts, decisions, tasks, requirements and corrections.
+6. Generate compact conversation context and manageable chunks.
+7. Verify extracted information against the original conversation.
+8. Screen selected claims against externally supplied sources.
+9. Assess the available evidence and communicate uncertainty.
+10. Generate structured PDF and editable DOCX reports.
+11. Evaluate the processing results using measurable metrics.
+
+The system should prioritize local processing, privacy, transparency, traceability and preservation of the original meaning.
+
+# 2. TECHNOLOGY STACK
+
+Use the following technologies unless a necessary compatibility issue requires an explicitly explained change.
+
+### Frontend
+- React.js
+- JavaScript
+- HTML
+- CSS
+- Vite
+
+### Backend
+- Python
+- FastAPI
+- Pydantic
+- Uvicorn
+
+### Database
+- SQLite
+- Local database storage for conversation history and related processing records.
+
+### Document generation
+- python-docx for editable Word documents.
+- ReportLab for PDF generation.
+
+### Processing
+- Python-based text preprocessing.
+- Rule-based classification and extraction.
+- Similarity-based duplicate detection.
+- Topic segmentation and chunking.
+- Optional locally executed Natural Language Inference (NLI) models as a separately configurable enhancement.
+
+### Important technology restrictions
+- The core application must work without an OpenAI API key.
+- Do not make hidden ChatGPT or OpenAI API calls.
+- Do not require paid LLM services.
+- Do not send entire conversations to external services.
+- Keep the primary conversation processing local.
+- Clearly disclose whenever a user-selected external URL is retrieved.
+
+Do not introduce unnecessary technologies or complex infrastructure that makes the project difficult to run on a normal Windows laptop.
+
+# 3. TASK 1 — LOCAL CONVERSATION PROCESSING AND COMPRESSION
+
+This is the primary task.
+
+The purpose is to reduce the size of lengthy conversations while retaining important information and sufficient context for future reuse.
+
+## 3.1 Conversation input
+
+Support:
+
+- Manual conversation text input.
+- Importing ChatGPT's official data export through `conversations.json`.
+- Best-effort import of publicly accessible ChatGPT shared conversation URLs.
+- Built-in demonstration/sample conversations.
+
+For ChatGPT JSON imports:
+
+- Parse the official export structure.
+- Extract conversation titles.
+- Extract messages and their contents.
+- Preserve speaker roles.
+- Preserve message order and timestamps when available.
+- Handle messages with different content structures.
+- Handle empty, malformed or unsupported conversations gracefully.
+- Allow users to select a conversation when an export contains multiple conversations.
+
+For shared links:
+
+- Attempt to retrieve publicly accessible conversation content.
+- Parse the available page content without assuming a fixed HTML structure.
+- Handle inaccessible pages, HTTP errors, Cloudflare challenges and changed page formats.
+- Display clear error messages.
+- Never request ChatGPT passwords, session cookies or authentication tokens.
+- Provide JSON import as a fallback.
+
+Do not claim that every public shared link can be fetched successfully.
+
+## 3.2 Text preprocessing
+
+Implement:
+
+- Removal of unnecessary whitespace.
+- Normalization of line breaks.
+- Cleaning of redundant formatting.
+- Separation of conversation messages.
+- Identification of speaker roles.
+- Statement extraction.
+- Preservation of meaningful technical terms, names, numbers and dates.
+
+Do not remove information merely because it appears unimportant according to a simplistic rule.
+
+## 3.3 Duplicate detection
+
+Identify:
+
+- Exact duplicate statements.
+- Near-duplicate statements.
+- Repeated information.
+- Repeated questions and answers where appropriate.
+
+The system must distinguish between repeated text and meaningful updates.
+
+For example:
+
+Original:
+- The meeting is scheduled for Thursday.
+- The meeting is scheduled for Thursday.
+- Correction: The meeting has been moved to Friday.
+
+Expected:
+- Detect the repeated Thursday statement.
+- Preserve the correction.
+- Preserve the final updated meeting date.
+- Maintain the original statements for traceability.
+
+Do not delete contradictory statements without preserving their history.
+
+## 3.4 Topic classification and segmentation
+
+Organize extracted statements into meaningful categories, such as:
+
+- Decisions and Plans
+- Tasks and Actions
+- Corrections and Updates
+- People and Contacts
+- Facts and Reference Information
+- Requirements
+- Questions and Unresolved Issues
+
+Allow categories to be extended when needed.
+
+The system should group related statements and divide lengthy conversations into manageable topic-based segments.
+
+## 3.5 Important information extraction
+
+Identify and retain:
+
+- Important facts.
+- Decisions.
+- Deadlines.
+- Dates and schedules.
+- Assigned responsibilities.
+- Technical requirements.
+- User preferences relevant to the conversation.
+- Corrections.
+- Unresolved questions.
+- Important constraints.
+
+Preserve relationships between people, tasks, dates and decisions.
+
+## 3.6 Correction detection
+
+Detect possible changes in previously stated information.
+
+Example:
+
+Earlier statement:
+"The final meeting is on Thursday."
+
+Later statement:
+"Correction: The meeting is on Friday."
+
+Expected output:
+- Earlier statement: Thursday.
+- New statement: Friday.
+- Correction type: Date update.
+- Review status: Pending review.
+
+Allow users to accept, reject or leave correction candidates unresolved.
+
+Do not assume every later statement is automatically correct.
+
+## 3.7 Context compression
+
+Generate compact conversation context that retains:
+
+- Main topic.
+- Important facts.
+- Final decisions.
+- Current plans.
+- Tasks and responsibilities.
+- Important corrections.
+- Relevant constraints.
+- Unresolved questions.
+
+Provide compression levels:
+
+- Low compression: retain more original detail.
+- Balanced compression: retain important information while removing unnecessary repetition.
+- High compression: produce a shorter representation while preserving essential context.
+
+Allow configurable chunk size and relevant processing parameters.
+
+## 3.8 Chunk generation
+
+Divide the processed conversation into manageable chunks.
+
+Each chunk should:
+
+- Contain related information.
+- Avoid unnecessary splitting of connected statements.
+- Retain important context.
+- Have a clear topic or identifier.
+- Preserve links to its original statements.
+
+# 4. TASK 2 — INTERNAL FACTUAL VERIFICATION
+
+The purpose is to verify whether information extracted by Task 1 is supported by the original conversation.
+
+This task is about source consistency and traceability, not proving that every statement is objectively true.
+
+## Required features
+
+1. Extract candidate facts, decisions and requirements.
+2. Link each extracted item to its original statement.
+3. Store the original statement ID.
+4. Display the original source text.
+5. Check whether the extracted information is supported by the cited source.
+6. Identify unsupported or incorrectly extracted information.
+7. Identify possible contradictions between statements.
+8. Identify outdated information where a later correction exists.
+9. Preserve correction history.
+10. Display verification results clearly.
+
+Each extracted item should include:
+
+- Extracted information.
+- Information category.
+- Original statement ID.
+- Original source text.
+- Verification result.
+- Explanation.
+- Review status, where applicable.
+
+Possible result categories:
+
+- Supported by original conversation.
+- Unsupported by cited conversation text.
+- Contradictory information found.
+- Possible outdated information.
+- Requires manual review.
+
+Important:
+
+A statement appearing in a conversation does not make it objectively true.
+
+The system must clearly distinguish:
+- Whether the conversation supports the extracted statement.
+- Whether the statement is externally verified.
+
+Do not present source-traceability checks as objective fact verification.
+
+# 5. TASK 3 — EXTERNAL FACT-CHECKING AND RELIABILITY ASSESSMENT
+
+The purpose is to compare selected claims from the conversation against information available in external sources.
+
+## Required features
+
+1. Identify claims suitable for external checking.
+2. Allow users to provide external HTTPS source URLs.
+3. Retrieve readable content from supplied sources.
+4. Extract relevant source text.
+5. Compare selected claims with retrieved evidence.
+6. Show the source title and URL.
+7. Show the relevant source excerpt.
+8. Display the matching result.
+9. Communicate uncertainty and limitations.
+10. Allow human review of the evidence.
+
+Where supported by the implementation, classify findings as:
+
+- Supported.
+- Contradicted.
+- Outdated.
+- Inconclusive.
+
+Do not assign these labels merely because a few keywords match.
+
+For the current prototype, the external checking implementation uses keyword-overlap screening against supplied source excerpts.
+
+Therefore:
+- A high keyword overlap may be marked as supported by the prototype's screening rule.
+- A low overlap should remain inconclusive.
+- Keyword overlap must not be described as proof.
+- The system must not claim comprehensive internet research.
+- A source URL must not automatically be treated as trustworthy.
+
+## Reliability assessment
+
+Provide useful source information, such as:
+
+- Source title.
+- Source URL.
+- Source domain.
+- Available publication or update date.
+- Relevant excerpt.
+- Evidence matching explanation.
+- Limitations.
+- Manual review recommendation.
+
+Prefer credible sources when users supply them, such as official documentation, government websites, academic publications and recognized institutions.
+
+Do not invent citations, publication dates, evidence or source credibility scores.
+
+Clearly indicate when a source cannot be retrieved or contains insufficient information.
+
+# 6. TASK 4 — DOCUMENT GENERATION AND EVALUATION
+
+The purpose is to convert processed conversations and verification results into structured documents.
+
+## 6.1 Document generation
+
+Generate:
+
+- Editable DOCX reports.
+- PDF reports.
+
+The documents should include:
+
+1. Project/report title.
+2. Original conversation details.
+3. Conversation summary.
+4. Important extracted information.
+5. Topic-wise organization.
+6. Decisions and plans.
+7. Tasks and responsibilities.
+8. Corrections and updates.
+9. Internal verification results.
+10. External evidence screening results.
+11. Unresolved questions.
+12. Processing and compression metrics.
+13. System limitations and review warnings.
+
+Use a professional academic-report layout with:
+- Clear headings.
+- Consistent formatting.
+- Readable tables where appropriate.
+- Page numbers where practical.
+- Proper spacing.
+- A clean title section.
+
+The DOCX must remain editable.
+
+The PDF must be readable and properly formatted.
+
+## 6.2 Evaluation metrics
+
+Display measurable metrics, including:
+
+### Input metrics
+- Original character count.
+- Original word count.
+- Original message count, when available.
+
+### Processing metrics
+- Cleaned statement count.
+- Exact duplicates detected.
+- Near-duplicate candidates detected.
+- Number of topics.
+- Number of chunks.
+- Important statements extracted.
+- Corrections detected.
+- Processing time.
+
+### Output metrics
+- Compressed context word count.
+- Output character count.
+- Estimated token count.
+- Compression ratio.
+- Percentage of reduction.
+- Information retained, where measurable.
+
+Use correct formulas.
+
+Word reduction:
+
+((Original words - Output words) / Original words) × 100
+
+Compression ratio:
+
+Output words / Original words
+
+Token counts must be distinguished from word counts.
+
+The current prototype uses a rough estimate of tokens based on whitespace word count multiplied by 1.33. If an actual compatible tokenizer is added, report its results separately from approximate estimates.
+
+Do not label estimated tokens as exact token counts.
+
+## 6.3 Evaluation and quality assessment
+
+Evaluate the system using:
+
+- Compression effectiveness.
+- Important information preservation.
+- Duplicate detection effectiveness.
+- Correction detection effectiveness.
+- Topic organization quality.
+- Internal source traceability.
+- External evidence screening quality.
+- Document generation success.
+- Processing time.
+
+Where possible, provide a small labelled test dataset and calculate precision, recall and F1-score for classification or detection tasks.
+
+Do not claim accuracy percentages without a test dataset and actual measurements.
+
+# 7. INTEGRATED WORKFLOW
+
+All four tasks must be connected through one application.
+
+Expected workflow:
+
+STEP 1: IMPORT
+- Paste a conversation.
+- Import `conversations.json`.
+- Attempt a public shared-link import.
+
+STEP 2: PROCESS
+- Clean and normalize text.
+- Extract statements.
+- Detect duplicates.
+- Classify topics.
+- Detect possible corrections.
+- Compress context.
+- Generate chunks.
+- Calculate processing metrics.
+
+STEP 3: INTERNAL VERIFICATION
+- Extract candidate knowledge.
+- Trace extracted items to original statements.
+- Identify unsupported extraction and contradictions.
+- Review correction candidates.
+
+STEP 4: EXTERNAL SCREENING
+- Accept selected claims.
+- Retrieve user-supplied external sources.
+- Compare claims against source excerpts.
+- Display evidence and limitations.
+
+STEP 5: DOCUMENT GENERATION
+- Generate DOCX.
+- Generate PDF.
+- Include processing and verification results.
+
+STEP 6: EVALUATION
+- Display metrics.
+- Compare original and compressed content.
+- Explain what information was retained.
+- Highlight limitations and items requiring manual review.
+
+The workflow must not require users to copy data manually between four separate applications.
+
+# 8. USER INTERFACE REQUIREMENTS
+
+Build a clean, professional, responsive interface.
+
+The dashboard should include:
+
+1. Project name and description.
+2. Conversation import panel.
+3. Manual text input.
+4. ChatGPT JSON upload.
+5. Public shared-link input.
+6. Sample conversation option.
+7. Processing controls.
+8. Original conversation preview.
+9. Compressed conversation output.
+10. Topic-wise results.
+11. Duplicate detection results.
+12. Correction review section.
+13. Internal verification section.
+14. External evidence section.
+15. Evaluation metrics dashboard.
+16. DOCX and PDF download buttons.
+17. Saved conversation history.
+18. Delete and export controls.
+
+Use clear status messages:
+- Ready.
+- Processing.
+- Completed.
+- Failed.
+- Requires review.
+
+Provide useful error messages instead of generic failures.
+
+Do not display fake progress or claim an operation succeeded before it actually completes.
+
+# 9. BACKEND AND API REQUIREMENTS
+
+Maintain a modular FastAPI backend.
+
+The existing project includes these endpoints:
+
+- GET `/api/health`
+- POST `/api/process`
+- POST `/api/import/chatgpt-json`
+- POST `/api/import/chatgpt-link`
+- POST `/api/knowledge`
+- POST `/api/documents/docx`
+- POST `/api/documents/pdf`
+- GET `/api/conversations`
+- GET `/api/conversations/{conversation_id}`
+- DELETE `/api/conversations/{conversation_id}`
+- GET `/api/conversations/{conversation_id}/corrections`
+- POST `/api/conversations/{conversation_id}/corrections/{correction_index}/resolve`
+- GET `/api/conversations/{conversation_id}/export`
+
+Preserve working endpoints and existing functionality when modifying the application.
+
+Use:
+- Pydantic request validation.
+- Proper HTTP status codes.
+- Clear exception handling.
+- CORS configuration.
+- Modular processing functions.
+- SQLite persistence.
+- Consistent API response structures.
+
+Do not silently rename endpoints or change request schemas in a way that breaks the frontend.
+
+# 10. DATABASE AND DATA MANAGEMENT
+
+Use SQLite for local persistence.
+
+Store relevant information such as:
+- Conversation title.
+- Original conversation text.
+- Processed results.
+- Processing metrics.
+- Correction history.
+- Creation timestamp.
+- Review status.
+
+Maintain traceability between:
+- Original messages.
+- Extracted statements.
+- Compressed context.
+- Verification results.
+- Generated reports.
+
+Provide:
+- Conversation history.
+- Conversation retrieval.
+- Conversation deletion.
+- TXT or JSON export where implemented.
+- Correction resolution.
+
+Do not store unnecessary personal information.
+
+# 11. PRIVACY AND SECURITY
+
+The system should be local-first.
+
+Requirements:
+- Do not transmit complete conversations to an external LLM.
+- Do not require ChatGPT login credentials.
+- Do not request session cookies.
+- Validate uploaded file formats and sizes.
+- Validate URLs before fetching them.
+- Use sensible request timeouts.
+- Handle malformed input safely.
+- Avoid unsafe file paths.
+- Display clear privacy information.
+- Make external network requests only for explicitly supplied URLs or shared-link imports.
+
+Explain that externally supplied source URLs are retrieved over the internet and that selected claims may be exposed to those source websites through the request.
+
+# 12. CURRENT IMPLEMENTATION STATUS — DO NOT MISREPRESENT
+
+The existing uploaded project is a React/Vite frontend with a Python/FastAPI backend and SQLite storage.
+
+Its current features include:
+
+### Task 1
+- Manual conversation input.
+- ChatGPT `conversations.json` import.
+- Best-effort public shared-link import.
+- Text preprocessing.
+- Exact and near-duplicate candidate detection.
+- Topic classification.
+- Statement segmentation and chunking.
+- Important information extraction.
+- Correction candidate detection.
+- Compact context generation.
+- Local processing metrics.
+
+### Task 2
+- Candidate fact, decision and requirement extraction.
+- Source statement references.
+- Source-text traceability checks.
+- Review of possible corrections.
+
+### Task 3
+- User-supplied HTTPS source URL retrieval.
+- Readable source excerpt extraction.
+- Keyword-overlap screening.
+- Supported or inconclusive screening output.
+- Evidence URL and warning information.
+
+### Task 4
+- DOCX generation.
+- PDF generation.
+- Processing metrics in reports.
+- Integrated workflow output.
+
+### Existing technical boundaries
+- Core processing is rule-based and local.
+- No OpenAI or ChatGPT API calls are required.
+- Internal verification does not establish objective truth.
+- External verification is keyword-overlap screening, not comprehensive fact-checking.
+- Shared-link extraction is best-effort and can fail.
+- ChatGPT export JSON is the more reliable import method.
+- The JSON importer currently loads the first conversation in a multi-conversation export.
+- Token counts are approximate, not tokenizer-exact.
+- Topic grouping and duplicate detection are heuristic.
+- The application does not embed a live ChatGPT conversation or automatically inject compressed context into ChatGPT.
+
+Never describe these existing prototype features as production-grade AI capabilities.
+
+# 13. REQUIRED IMPROVEMENTS
+
+Improve the existing project without unnecessarily rewriting working code.
+
+Prioritize:
+
+1. Make ChatGPT JSON import robust and support selecting a conversation from a multi-conversation export.
+2. Improve public shared-link extraction where technically possible, with clear failure messages and no false success.
+3. Ensure frontend and backend endpoint paths and request schemas match exactly.
+4. Improve duplicate and near-duplicate handling while preserving corrections and contradictions.
+5. Improve topic segmentation and context preservation.
+6. Improve traceability from extracted knowledge to original messages.
+7. Make external evidence screening clearer and safer.
+8. Add proper tokenizer-based metrics as an optional enhancement, clearly distinguishing actual tokens from estimates.
+9. Improve report formatting and completeness.
+10. Ensure the entire workflow works from import to document download.
+
+Any advanced NLP, embeddings, NLI or machine-learning component must be optional, locally executable where practical, and clearly identified as an enhancement rather than an existing feature.
+
+# 14. TESTING REQUIREMENTS
+
+Test the complete application, not just individual functions.
+
+Include test cases for:
+
+- Empty conversation.
+- Large conversation.
+- Malformed ChatGPT JSON.
+- Multi-conversation JSON export.
+- Missing message content.
+- Different speaker roles.
+- Exact duplicates.
+- Near duplicates.
+- Contradictory statements.
+- Later corrections.
+- Topic classification.
+- Chunk generation.
+- Compression output.
+- Internal traceability.
+- Unsupported extracted information.
+- Invalid external URLs.
+- Unreachable external sources.
+- Low keyword overlap.
+- High keyword overlap.
+- DOCX generation.
+- PDF generation.
+- SQLite save and retrieval.
+- Conversation deletion.
+- Frontend-backend integration.
+
+Test the Windows startup process.
+
+Verify that:
+- Backend starts without import errors.
+- Frontend starts successfully.
+- Health endpoint works.
+- Import endpoints work.
+- Processing endpoint works.
+- Integrated workflow completes.
+- DOCX and PDF files can actually be opened.
+
+Do not report tests as passed unless they were actually executed.
+
+# 15. DELIVERY REQUIREMENTS
+
+I need a complete working project, not disconnected code snippets.
+
+Provide:
+
+1. Complete project folder.
+2. Complete frontend source code.
+3. Complete backend source code.
+4. Database initialization.
+5. Requirements file.
+6. Frontend package configuration.
+7. Windows startup scripts.
+8. README with exact setup instructions.
+9. API documentation through FastAPI Swagger.
+10. Automated tests.
+11. Sample conversation for demonstration.
+12. Example generated reports.
+
+The project should run on Windows using straightforward commands or startup scripts.
+
+If you modify an existing project:
+- Inspect its actual source code first.
+- Preserve existing working functionality.
+- Avoid unnecessary rewrites.
+- Check every frontend API call against its backend route.
+- Do not leave incomplete placeholders.
+- Do not provide partial snippets when complete files are required.
+- Do not invent successful test results.
+- Do not silently omit any of the four tasks.
+
+Before delivering, run the available tests and verify the complete application as far as the environment allows. Clearly report anything that could not be tested.
+
+# 16. FINAL EXPECTED RESULT
+
+The final system should demonstrate this complete transformation:
+
+LONG CHATGPT CONVERSATION
+        ↓
+CONVERSATION IMPORT
+        ↓
+LOCAL TEXT PROCESSING
+        ↓
+DUPLICATE DETECTION AND TOPIC SEGMENTATION
+        ↓
+IMPORTANT KNOWLEDGE EXTRACTION
+        ↓
+CONTEXT COMPRESSION AND CHUNKING
+        ↓
+INTERNAL SOURCE TRACEABILITY
+        ↓
+EXTERNAL EVIDENCE SCREENING
+        ↓
+EVALUATION METRICS
+        ↓
+EDITABLE DOCX AND PDF REPORTS
+
+The main objective is to demonstrate how lengthy AI conversations can be converted into compact, organized, traceable and reusable knowledge while retaining important context and clearly communicating verification limitations.
+
+Build this as one integrated, functional academic Sem-EL software prototype. Prioritize correctness, transparency, explainability, usability and a successful end-to-end demonstration over unnecessary complexity.
